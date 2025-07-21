@@ -9,6 +9,13 @@ This project is a microservice that uses a GitHub Action to create dated markdow
 3.  The `.github/workflows/create-file.yml` GitHub Action is triggered by the `repository_dispatch` event.
 4.  The action creates a new markdown file in the `contents` directory with the current date and time as the filename.
 
+## Configuration
+
+The following environment variables are used to configure the application:
+
+*   `GHTOKEN`: A GitHub personal access token with the `repo` scope.
+*   `GITHUB_REPOSITORY`: The name of the GitHub repository (e.g., `IgnatMaldive/micro-allinone2`).
+
 ## Troubleshooting
 
 We recently encountered an issue where the markdown files were being created with the correct filename, but were empty of content. This was due to a combination of issues:

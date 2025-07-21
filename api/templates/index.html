@@ -7,6 +7,7 @@
    <body>
       <div class="container">
          <h1>My Awesome Blog</h1>
+         <a href="{{ url_for('admin') }}">Admin</a>
          <hr>
          {% for post in posts %}
             <div class="blog-post">

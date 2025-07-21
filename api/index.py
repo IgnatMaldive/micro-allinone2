@@ -51,11 +51,16 @@ def result():
 
 import base64
 
-@app.route('/trigger', methods=['POST'])
-def trigger():
-    random_content = ''.join(random.choices(string.ascii_lowercase + string.digits, k=32))
-    sample_content = f"# enunpapsi multticolor\n\nRandom: {random_content}\n\n- Date: {datetime.now().isoformat()}\n- Author: System\n\nFeel free to edit this content."
-    encoded_content = base64.b64encode(sample_content.encode('utf-8')).decode('utf-8')
+from flask import request, redirect
+
+@app.route('/admin')
+def admin():
+    return render_template('admin.html')
+
+@app.route('/admin/create-post', methods=['POST'])
+def create_post():
+    content = request.form['content']
+    encoded_content = base64.b64encode(content.encode('utf-8')).decode('utf-8')
     
     headers = {
         'Accept': 'application/vnd.github.v3+json',
@@ -69,9 +74,10 @@ def trigger():
         },
     }
     
-    response = requests.post('https://api.github.com/repos/IgnatMaldive/micro-allinone2/dispatches', headers=headers, json=data)
+    repo = os.environ.get('GITHUB_REPOSITORY', 'IgnatMaldive/micro-allinone2')
+    response = requests.post(f'https://api.github.com/repos/{repo}/dispatches', headers=headers, json=data)
     
     if response.ok:
-        return 'OK'
+        return redirect(url_for('hello'))
     else:
         return 'Error', 500

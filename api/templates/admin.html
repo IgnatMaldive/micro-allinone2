@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Create New Post</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Create New Post</h1>
+        <form action="/admin/create-post" method="post">
+            <textarea name="content" rows="10" cols="80" placeholder="Enter your post content here..."></textarea>
+            <br>
+            <button type="submit">Create Post</button>
+        </form>
+    </div>
+</body>
+</html>
