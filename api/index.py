@@ -2,6 +2,9 @@ from flask import Flask, render_template, url_for
 import os
 import markdown
 from datetime import datetime
+import requests
+import random
+import string
 
 app = Flask(__name__)
 
@@ -46,7 +49,29 @@ def result():
    dict = {'phy':50,'che':60,'maths':70}
    return render_template('result.html', result = dict)
 
+import base64
+
 @app.route('/trigger', methods=['POST'])
 def trigger():
-    os.system(f'curl -X POST -H "Accept: application/vnd.github.v3+json" -H "Authorization: token $GHTOKEN" https://api.github.com/repos/IgnatMaldive/micro-allinone2/dispatches -d \'{{"event_type":"create-dated-file"}}\'')
-    return 'OK'
+    random_content = ''.join(random.choices(string.ascii_lowercase + string.digits, k=32))
+    sample_content = f"# enunpapsi multticolor\n\nRandom: {random_content}\n\n- Date: {datetime.now().isoformat()}\n- Author: System\n\nFeel free to edit this content."
+    encoded_content = base64.b64encode(sample_content.encode('utf-8')).decode('utf-8')
+    
+    headers = {
+        'Accept': 'application/vnd.github.v3+json',
+        'Authorization': f'token {os.environ["GHTOKEN"]}',
+    }
+    
+    data = {
+        'event_type': 'create-dated-file',
+        'client_payload': {
+            'content': encoded_content,
+        },
+    }
+    
+    response = requests.post('https://api.github.com/repos/IgnatMaldive/micro-allinone2/dispatches', headers=headers, json=data)
+    
+    if response.ok:
+        return 'OK'
+    else:
+        return 'Error', 500

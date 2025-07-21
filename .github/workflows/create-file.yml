@@ -20,9 +20,7 @@ jobs:
           echo "Received content: $FILE_CONTENT"
           now=$(date +"%Y-%m-%d-%H-%M-%S")
           mkdir -p contents
-          cat <<EOF > "contents/$now.md"
-          $FILE_CONTENT
-          EOF
+          echo "$FILE_CONTENT" | base64 --decode > "contents/$now.md"
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add contents
