@@ -13,13 +13,18 @@ def get_blog_posts():
     content_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'contents')
     for filename in os.listdir(content_dir):
         if filename.endswith(".md"):
+            filepath = os.path.join(content_dir, filename)
+            with open(filepath, 'r', encoding='utf-8') as f:
+                content = f.read()
+                html_content = markdown.markdown(content) # Convert Markdown to HTML
             # Extract title and date from filename
             title = os.path.splitext(filename)[0].replace("-", " ").title()
             date_str = filename.split("-")[0]
             posts.append({
                 'filename': filename,
                 'title': title,
-                'date': date_str
+                'date': date_str,
+                'content': html_content # Add the HTML content
             })
     # Sort posts by date, newest first
     posts.sort(key=lambda x: x['date'], reverse=True)
