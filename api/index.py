@@ -60,7 +60,8 @@ from flask import request, redirect
 
 @app.route('/admin')
 def admin():
-    return render_template('admin.html')
+    posts = get_blog_posts()
+    return render_template('admin.html', posts=posts)
 
 @app.route('/admin/create-post', methods=['POST'])
 def create_post():
@@ -86,3 +87,82 @@ def create_post():
         return redirect(url_for('hello'))
     else:
         return 'Error', 500
+
+@app.route('/admin/edit-post/<filename>')
+def edit_post(filename):
+    content_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'contents')
+    filepath = os.path.join(content_dir, filename)
+    with open(filepath, 'r', encoding='utf-8') as f:
+        content = f.read()
+    title = os.path.splitext(filename)[0].replace("-", " ").title()
+    return render_template('edit_post.html', filename=filename, title=title, content=content)
+
+@app.route('/admin/update-post', methods=['POST'])
+def update_post():
+    filename = request.form['filename']
+    content = request.form['content']
+    
+    repo = os.environ.get('GITHUB_REPOSITORY', 'IgnatMaldive/micro-allinone2')
+    
+    # Get the current SHA of the file
+    headers = {
+        'Accept': 'application/vnd.github.v3+json',
+        'Authorization': f'token {os.environ["GHTOKEN"]}',
+    }
+    
+    response = requests.get(f'https://api.github.com/repos/{repo}/contents/contents/{filename}', headers=headers)
+    
+    if not response.ok:
+        return 'Error getting file SHA', 500
+    
+    file_data = response.json()
+    sha = file_data['sha']
+    
+    encoded_content = base64.b64encode(content.encode('utf-8')).decode('utf-8')
+    
+    data = {
+        'message': f'Update post: {filename}',
+        'content': encoded_content,
+        'sha': sha,
+        'branch': 'main' # Assuming 'main' is your default branch
+    }
+    
+    response = requests.put(f'https://api.github.com/repos/{repo}/contents/contents/{filename}', headers=headers, json=data)
+    
+    if response.ok:
+        return redirect(url_for('hello'))
+    else:
+        return 'Error updating file', 500
+
+@app.route('/admin/delete-post', methods=['POST'])
+def delete_post():
+    filename = request.form['filename']
+    
+    repo = os.environ.get('GITHUB_REPOSITORY', 'IgnatMaldive/micro-allinone2')
+    
+    # Get the current SHA of the file
+    headers = {
+        'Accept': 'application/vnd.github.v3+json',
+        'Authorization': f'token {os.environ["GHTOKEN"]}',
+    }
+    
+    response = requests.get(f'https://api.github.com/repos/{repo}/contents/contents/{filename}', headers=headers)
+    
+    if not response.ok:
+        return 'Error getting file SHA for deletion', 500
+    
+    file_data = response.json()
+    sha = file_data['sha']
+    
+    data = {
+        'message': f'Delete post: {filename}',
+        'sha': sha,
+        'branch': 'main' # Assuming 'main' is your default branch
+    }
+    
+    response = requests.delete(f'https://api.github.com/repos/{repo}/contents/contents/{filename}', headers=headers, json=data)
+    
+    if response.ok:
+        return redirect(url_for('hello'))
+    else:
+        return 'Error deleting file', 500
