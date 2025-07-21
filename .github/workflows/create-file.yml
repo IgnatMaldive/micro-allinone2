@@ -17,7 +17,7 @@ jobs:
         run: |
           now=$(date +"%Y-%m-%d-%H-%M-%S")
           mkdir -p contents
-          touch "contents/$now.md"
+          echo "${{ github.event.client_payload.content }}" > "contents/$now.md"
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add contents
