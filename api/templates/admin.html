@@ -10,7 +10,9 @@
     <div class="container">
         <h1>Create New Post</h1>
         <form action="/admin/create-post" method="post">
-            <textarea name="content" rows="10" cols="80" placeholder="Enter your post content here..."></textarea>
+            <input type="text" name="title" placeholder="Enter post title" required style="width:80%;margin-bottom:10px;">
+            <br>
+            <textarea name="content" rows="10" cols="80" placeholder="Enter your post content here..." required></textarea>
             <br>
             <button type="submit">Create Post</button>
         </form>

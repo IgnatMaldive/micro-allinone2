@@ -9,17 +9,10 @@ module.exports = async (req, res) => {
   }
 
   try {
-    function getRandomString(length) {
-      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-      let result = '';
-      for (let i = 0; i < length; i++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      return result;
+    const { title, content } = req.body;
+    if (!title || !content) {
+      return res.status(400).json({ error: 'Title and content are required' });
     }
-
-    const randomContent = getRandomString(32);
-    const sampleContent = `# enunpapsi multticolor\n\nRandom: ${randomContent}\n\n- Date: ${new Date().toISOString()}\n- Author: System\n\nFeel free to edit this content.`;
     const response = await fetch('https://api.github.com/repos/IgnatMaldive/micro-allinone2/dispatches', {
       method: 'POST',
       headers: {
@@ -29,7 +22,8 @@ module.exports = async (req, res) => {
       body: JSON.stringify({
         event_type: 'create-dated-file',
         client_payload: {
-          content: sampleContent
+          title,
+          content
         }
       }),
     });

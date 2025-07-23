@@ -65,24 +65,26 @@ def admin():
 
 @app.route('/admin/create-post', methods=['POST'])
 def create_post():
+    title = request.form['title']
     content = request.form['content']
     encoded_content = base64.b64encode(content.encode('utf-8')).decode('utf-8')
-    
+
     headers = {
         'Accept': 'application/vnd.github.v3+json',
         'Authorization': f'token {os.environ["GHTOKEN"]}',
     }
-    
+
     data = {
         'event_type': 'create-dated-file',
         'client_payload': {
+            'title': title,
             'content': encoded_content,
         },
     }
-    
+
     repo = os.environ.get('GITHUB_REPOSITORY', 'IgnatMaldive/micro-allinone2')
     response = requests.post(f'https://api.github.com/repos/{repo}/dispatches', headers=headers, json=data)
-    
+
     if response.ok:
         return redirect(url_for('hello'))
     else:
