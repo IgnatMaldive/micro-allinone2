@@ -85,7 +85,8 @@ def admin():
 
 @app.route('/admin/create-post', methods=['POST'])
 def create_post():
-    title = request.form.get('title', 'Untitled Post')
+<<<<<<< HEAD
+    title = request.form.get('title', 'Untitled Post') # Use .get with default for robustness
     content = request.form['content']
     
     # Generate current date for frontmatter
@@ -100,17 +101,18 @@ def create_post():
         'Accept': 'application/vnd.github.v3+json',
         'Authorization': f'token {os.environ["GHTOKEN"]}',
     }
-    
+
     data = {
         'event_type': 'create-dated-file',
         'client_payload': {
+            'title': title, # Keep this as per remote's change
             'content': encoded_content,
         },
     }
-    
+
     repo = os.environ.get('GITHUB_REPOSITORY', 'IgnatMaldive/micro-allinone2')
     response = requests.post(f'https://api.github.com/repos/{repo}/dispatches', headers=headers, json=data)
-    
+
     if response.ok:
         return redirect(url_for('hello'))
     else:
