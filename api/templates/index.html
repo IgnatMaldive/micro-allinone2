@@ -12,8 +12,8 @@
          {% for post in posts %}
             <div class="blog-card">
                <div class="blog-post">
-                  <h2><a href="{{ url_for('post', filename=post.filename) }}">{{ post.title }}</a></h2>
-                  <p class="post-meta">{{ post.date }}</p>
+                  <h2><a href="{{ url_for('post', filename=post.filename) }}">{{ post.frontmatter.title if post.frontmatter.title else post.title }}</a></h2>
+                  <p class="post-meta">{{ post.frontmatter.date if post.frontmatter.date else post.date }}</p>
                   <div class="post-content">
                      {{ post.content | safe }}
                   </div>
